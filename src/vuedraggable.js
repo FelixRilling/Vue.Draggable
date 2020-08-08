@@ -477,9 +477,11 @@ const draggableComponent = {
       draggingElement = null;
     },
 
-    onDragSpill(evt) {
-      // Pseudo-noop
-      this.emitChanges(evt);
+    onDragSpill() {
+      const oldIndex = this.context.index;
+      const removed = { element: this.context.element, oldIndex };
+      this.resetTransitionData(oldIndex);
+      this.emitChanges({ removed });
     }
   }
 };
