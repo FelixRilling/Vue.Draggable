@@ -1,5 +1,5 @@
 import Sortable from "sortablejs";
-import { insertNodeAt, camelize, console, removeNode } from "./util/helper";
+import { camelize, console, insertNodeAt, removeNode } from "./util/helper";
 
 function buildAttribute(object, propName, value) {
   if (value === undefined) {
@@ -98,7 +98,8 @@ function getComponentAttributes($attrs, componentData) {
   return attributes;
 }
 
-const eventsListened = ["Start", "Add", "Remove", "Update", "End"];
+let SPILL_EVENT = "Spill"; // For now manually add the one event we care about.
+const eventsListened = ["Start", "Add", "Remove", "Update", "End", SPILL_EVENT];
 const eventsToEmit = ["Choose", "Unchoose", "Sort", "Filter", "Clone"];
 const readonlyProperties = ["Move", ...eventsListened, ...eventsToEmit].map(
   evt => "on" + evt
@@ -436,7 +437,7 @@ const draggableComponent = {
 
     updateProperty(evt, propertyName) {
       evt.hasOwnProperty(propertyName) &&
-        (evt[propertyName] += this.headerOffset);
+      (evt[propertyName] += this.headerOffset);
     },
 
     computeFutureIndex(relatedContext, evt) {
@@ -474,6 +475,11 @@ const draggableComponent = {
     onDragEnd() {
       this.computeIndexes();
       draggingElement = null;
+    },
+
+    onDragSpill(evt) {
+      // Pseudo-noop
+      this.emitChanges(evt);
     }
   }
 };
